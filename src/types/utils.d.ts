@@ -3,3 +3,8 @@ type DatabaseConstraintError = {
   columnName?: string;
   message?: string;
 };
+
+type incomingUser = {
+  username: string;
+  password: string;
+}
