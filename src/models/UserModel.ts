@@ -8,8 +8,8 @@ async function getUserByUsername(username: string): Promise<User | null> {
     // This should also retrieve the `links` relation
     const user = await userRepository
         .createQueryBuilder('user')
-        .where('username === :getUser', { getUser: username})
-        .select(['user.username', 'user.link'])
+        .leftJoinAndSelect('user.link', 'link')
+        .where('username = :username', { username})
         .getOne();
 
     return user;    

@@ -10,9 +10,10 @@ async function registerUser(req: Request, res: Response): Promise<void> {
     // Wrap the call to `addNewUser` in a try/catch like in the sample code
 
     const { username, password } = req.body as incomingUser;
+    const user = await getUserByUsername(username);
 
-    if(getUserByUsername(username)){
-        res.sendStatus(500).json("An unexpected error occured.\n");
+    if(user){
+        res.sendStatus(409);
     }
 
     // IMPORTANT: Hash the password
@@ -31,4 +32,25 @@ async function registerUser(req: Request, res: Response): Promise<void> {
     
 }
 
-export {registerUser};
+async function login(req: Request, res: Response): Promise<void> {
+
+    const { username, password } = req.body as incomingUser;
+    const user = await getUserByUsername(username);
+
+    if(!user){
+        res.sendStatus(404);
+        return;
+    }
+
+    const { passwordHash } = user;
+
+    if(!(await argon2.verify(passwordHash, password))) {
+        res.sendStatus(404);
+        return;
+    }
+
+    res.sendStatus(200);
+
+}
+
+export {registerUser, login};
