@@ -38,14 +38,14 @@ async function login(req: Request, res: Response): Promise<void> {
     const user = await getUserByUsername(username);
 
     if(!user){
-        res.sendStatus(404);
+        res.sendStatus(403);
         return;
     }
 
     const { passwordHash } = user;
 
     if(!(await argon2.verify(passwordHash, password))) {
-        res.sendStatus(404);
+        res.sendStatus(403);
         return;
     }
 
