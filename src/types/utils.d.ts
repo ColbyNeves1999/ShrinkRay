@@ -8,3 +8,7 @@ type incomingUser = {
   username: string;
   password: string;
 }
+
+type loggedUser = {
+  userId: string;
+}
