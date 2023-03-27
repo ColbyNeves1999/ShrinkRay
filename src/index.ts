@@ -2,6 +2,7 @@ import './config';
 import 'express-async-errors';
 import express, { Express } from 'express';
 import { registerUser, login } from './controllers/UserController';
+import { shortenUrl } from './controllers/LinkController';
 import session from 'express-session';
 import connectSqlite3 from 'connect-sqlite3';
 
@@ -23,6 +24,7 @@ app.use(express.json());
 
 app.post('/api/users', registerUser);
 app.post('/api/login', login);
+app.post('/api/links', shortenUrl);
 
 app.listen(PORT, () => {
     console.log(`Listening at http://localhost:${PORT}`);

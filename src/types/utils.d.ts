@@ -12,3 +12,7 @@ type incomingUser = {
 type loggedUser = {
   userId: string;
 }
+
+type linkURL = {
+  linkURL: string;
+}
