@@ -49,6 +49,15 @@ async function login(req: Request, res: Response): Promise<void> {
         return;
     }
 
+    await req.session.clearSession();
+    req.session.authenticatedUser = {
+        userId: user.userId,
+        isPro: user.isPro,
+        isAdmin: user.isAdmin,
+        username: user.username,
+      };
+    req.session.isLoggedIn = true;
+
     res.sendStatus(200);
 
 }

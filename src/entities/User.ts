@@ -15,7 +15,7 @@ export class User {
   @Column({ default: false })
   isPro: boolean;
 
-  @Column({ default: false})
+  @Column({ default: false })
   isAdmin: boolean;
 
   @OneToMany(() => Link, (link) => link.user)

@@ -11,12 +11,12 @@ async function addNewUser(username: string, passwordHash: string): Promise<User 
     newUser.username = username;
     newUser.passwordHash = passwordHash;
 
-  // Then save it to the database
-  // NOTES: We reassign to `newUser` so we can access
-  // NOTES: the fields the database autogenerates (the id & default columns)
-  newUser = await userRepository.save(newUser);
+    // Then save it to the database
+    // NOTES: We reassign to `newUser` so we can access
+    // NOTES: the fields the database autogenerates (the id & default columns)
+    newUser = await userRepository.save(newUser);
 
-  return newUser;
+    return newUser;
 }
 
 async function getUserByUsername(username: string): Promise<User | null> {

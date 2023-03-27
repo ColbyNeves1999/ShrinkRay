@@ -36,11 +36,12 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
             return;
         }
     }
-    
+
     // Generate a `linkId`
     const linkId = await createLinkId(linkURL, userId);
     // Add the new link to the database (wrap this in try/catch)
     // Respond with status 201 if the insert was successful
+
     try{
         const newLink = await createNewLink(linkURL, linkId, thisUser);
         res.sendStatus(201).json(newLink);
