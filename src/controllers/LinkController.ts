@@ -4,7 +4,7 @@ import { getUserByID } from '../models/UserModel';
 
 async function shortenUrl(req: Request, res: Response): Promise<void> {
 
-    const { linkURL } = req.body as linkURL;
+    const { originalUrl } = req.body as linkURL;
     const { isLoggedIn, authenticatedUser } = req.session;
 
     if(!isLoggedIn){
@@ -38,12 +38,13 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
     }
 
     // Generate a `linkId`
-    const linkId = await createLinkId(linkURL, userId);
+    const linkId = await createLinkId(originalUrl, userId);
     // Add the new link to the database (wrap this in try/catch)
     // Respond with status 201 if the insert was successful
 
     try{
-        const newLink = await createNewLink(linkURL, linkId, thisUser);
+        console.log(originalUrl);
+        const newLink = await createNewLink(originalUrl, linkId, thisUser);
         res.sendStatus(201).json(newLink);
         return;
     }catch(err){

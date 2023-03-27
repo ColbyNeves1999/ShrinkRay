@@ -14,5 +14,5 @@ type loggedUser = {
 }
 
 type linkURL = {
-  linkURL: string;
+  originalUrl: string;
 }

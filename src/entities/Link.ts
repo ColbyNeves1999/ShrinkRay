@@ -3,14 +3,14 @@ import { User } from './User';
 
 @Entity()
 export class Link {
-  @PrimaryColumn()
+  @PrimaryColumn({ unique: true })
   linkId: string;
 
-  @Column()
+  @Column({ unique: true })
   originalUrl: string;
 
-  @Column()
-  lasAccessedOn: Date;
+  @Column({ default: null })
+  lastAccessedOn: Date;
 
   @Column({ default: 0 })
   numHits: number;
