@@ -16,3 +16,7 @@ type loggedUser = {
 type linkURL = {
   originalUrl: string;
 }
+
+type linkId = {
+  targetLinkId: string;
+}

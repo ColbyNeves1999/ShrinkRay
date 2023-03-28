@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { createLinkId, createNewLink } from '../models/LinkModel';
-import { getUserByID } from '../models/UserModel';
+import { createLinkId, createNewLink, updateLinkVisits } from '../models/LinkModel';
+import { getUserByID, getLinkByID } from '../models/UserModel';
 
 async function shortenUrl(req: Request, res: Response): Promise<void> {
 
@@ -45,7 +45,8 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
     try{
         console.log(originalUrl);
         const newLink = await createNewLink(originalUrl, linkId, thisUser);
-        res.sendStatus(201).json(newLink);
+        console.log(newLink);
+        res.json(newLink);
         return;
     }catch(err){
         console.error(err);
@@ -55,4 +56,22 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
 
 }
 
-export { shortenUrl };
+async function getOriginalUrl(req: Request, res: Response): Promise<void> {
+    // Retrieve the link data using the targetLinkId from the path parameter
+    const { targetLinkId } = req.body as linkId;
+    const desiredLink = await getLinkByID(targetLinkId);
+
+    // Check if you got back `null`
+    if(!desiredLink){
+        // send the appropriate response
+        res.sendStatus(403);
+        return;
+    }
+
+    // Call the appropriate function to increment the number of hits and the last accessed date
+    updateLinkVisits(desiredLink);
+    // Redirect the client to the original URL
+    res.redirect(301, desiredLink.originalUrl);
+}
+
+export { shortenUrl, getOriginalUrl };
