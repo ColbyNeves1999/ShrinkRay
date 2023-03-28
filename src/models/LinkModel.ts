@@ -45,4 +45,16 @@ async function updateLinkVisits(link: Link): Promise<Link> {
 
 }
 
-export {createLinkId, createNewLink, updateLinkVisits };
+async function getLinksByUserId(userId: string): Promise<Link[]> {
+    const links = await linkRepository
+      .createQueryBuilder('link')
+      .where({ user: { userId } }) // NOTES: This is how you do nested WHERE clauses
+      .leftJoin('link.user', 'user')
+      .select(['link.linkId', 'link.originalUrl', 'user.userId'])
+      .getMany();
+      
+  
+    return links;
+}  
+
+export {createLinkId, createNewLink, updateLinkVisits, getLinksByUserId };
