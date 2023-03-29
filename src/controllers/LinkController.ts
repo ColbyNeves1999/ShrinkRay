@@ -88,9 +88,11 @@ async function returningLinkToUser(req: Request, res: Response): Promise<Link[]>
     try{
         if(authenticatedUser.isAdmin){
             const link = await getLinksByUserIdForOwnAccount(userId);
+            res.sendStatus(201);
             return link;
         }else{
             const link = await getLinksByUserId(userId);
+            res.sendStatus(201);
             return link;
         }
     }catch(err){
