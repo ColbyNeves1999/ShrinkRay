@@ -20,3 +20,7 @@ type linkURL = {
 type linkId = {
   targetLinkId: string;
 }
+
+type returnedUser = {
+  targetUserId: string;
+}

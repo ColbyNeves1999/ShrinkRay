@@ -77,9 +77,10 @@ async function getOriginalUrl(req: Request, res: Response): Promise<void> {
 
 async function returningLinkToUser(req: Request, res: Response): Promise<Link[]> {
 
-    let link = null;
-    const { userId } = req.body as loggedUser;
+    const { targetUserId } = req.params as returnedUser;
     const { isLoggedIn, authenticatedUser } = req.session;
+
+    let link = null;
 
     if (!isLoggedIn) {
 
@@ -89,19 +90,21 @@ async function returningLinkToUser(req: Request, res: Response): Promise<Link[]>
     }
 
     try {
+        
         if (authenticatedUser.isAdmin) {
 
-            link = await getLinksByUserIdForOwnAccount(userId);
+            link = await getLinksByUserIdForOwnAccount(targetUserId);
             res.sendStatus(201);
             return link;
 
         } else {
 
-            link = await getLinksByUserId(userId);
+            link = await getLinksByUserId(targetUserId);
             res.sendStatus(201);
             return link;
 
         }
+
     } catch (err) {
 
         console.error(err);
@@ -109,6 +112,9 @@ async function returningLinkToUser(req: Request, res: Response): Promise<Link[]>
         return link;
 
     }
+
+    res.sendStatus(200);
+        return link;
 
 }
 

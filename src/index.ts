@@ -26,7 +26,7 @@ app.post('/api/users', registerUser);
 app.post('/api/login', login);
 app.post('/api/links', shortenUrl);
 app.get('/:targetLinkId', getOriginalUrl);
-app.get('/api/:targetLinkId/links', returningLinkToUser);
+app.get('/api/users/:targetUserId/links', returningLinkToUser);
 
 app.listen(PORT, () => {
   console.log(`Listening at http://localhost:${PORT}`);

@@ -38,10 +38,11 @@ async function login(req: Request, res: Response): Promise<void> {
     const user = await getUserByUsername(username);
 
     if(!user){
+        console.log("HEEREERERE\n\n\n\n\n\n");
         res.sendStatus(403);
         return;
     }
-
+    console.log("GEEEERRRRE\n\n\n\n\n\n");
     const { passwordHash } = user;
 
     if(!(await argon2.verify(passwordHash, password))) {
