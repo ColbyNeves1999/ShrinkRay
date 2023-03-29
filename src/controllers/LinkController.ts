@@ -8,7 +8,7 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
     const { originalUrl } = req.body as linkURL;
     const { isLoggedIn, authenticatedUser } = req.session;
 
-    if(!isLoggedIn){
+    if (!isLoggedIn) {
         res.sendStatus(401);
         return;
     }
@@ -20,18 +20,18 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
     const thisUser = await getUserByID(userId);
 
     // Check if you got back `null`
-        // send the appropriate response
-    if(!thisUser){
+    // send the appropriate response
+    if (!thisUser) {
         res.sendStatus(404);
         return;
     }
- 
+
     // Check if the user is neither a "pro" nor an "admin" account
-    if(thisUser.isPro === false && thisUser.isAdmin === false){
+    if (thisUser.isPro === false && thisUser.isAdmin === false) {
         // check how many links they've already generated
         const usersLinks = thisUser.link.length;
         // if they have generated 5 links
-        if(usersLinks > 5){
+        if (usersLinks > 5) {
             // send the appropriate response
             res.sendStatus(403);
             return;
@@ -43,13 +43,13 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
     // Add the new link to the database (wrap this in try/catch)
     // Respond with status 201 if the insert was successful
 
-    try{
+    try {
         console.log(originalUrl);
         const newLink = await createNewLink(originalUrl, linkId, thisUser);
         console.log(newLink);
         res.status(201).json(newLink);
         return;
-    }catch(err){
+    } catch (err) {
         console.error(err);
         res.sendStatus(500);
         return;
@@ -63,7 +63,7 @@ async function getOriginalUrl(req: Request, res: Response): Promise<void> {
     const desiredLink = await getLinkByID(targetLinkId);
 
     // Check if you got back `null`
-    if(!desiredLink){
+    if (!desiredLink) {
         // send the appropriate response
         res.sendStatus(403);
         return;
@@ -77,30 +77,38 @@ async function getOriginalUrl(req: Request, res: Response): Promise<void> {
 
 async function returningLinkToUser(req: Request, res: Response): Promise<Link[]> {
 
+    let link = null;
     const { userId } = req.body as loggedUser;
     const { isLoggedIn, authenticatedUser } = req.session;
 
-    if(!isLoggedIn){
+    if (!isLoggedIn) {
+
         res.sendStatus(401);
-        return;
+        return link;
+
     }
 
-    try{
-        if(authenticatedUser.isAdmin){
-            const link = await getLinksByUserIdForOwnAccount(userId);
+    try {
+        if (authenticatedUser.isAdmin) {
+
+            link = await getLinksByUserIdForOwnAccount(userId);
             res.sendStatus(201);
             return link;
-        }else{
-            const link = await getLinksByUserId(userId);
+
+        } else {
+
+            link = await getLinksByUserId(userId);
             res.sendStatus(201);
             return link;
+
         }
-    }catch(err){
+    } catch (err) {
+
         console.error(err);
         res.sendStatus(500);
-        return;
-    }
+        return link;
 
+    }
 
 }
 
