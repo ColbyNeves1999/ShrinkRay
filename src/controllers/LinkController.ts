@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
-import { createLinkId, createNewLink, updateLinkVisits } from '../models/LinkModel';
+import { createLinkId, createNewLink, updateLinkVisits, getLinksByUserId, getLinksByUserIdForOwnAccount } from '../models/LinkModel';
 import { getUserByID, getLinkByID } from '../models/UserModel';
+import { Link } from "../entities/Link";
 
 async function shortenUrl(req: Request, res: Response): Promise<void> {
 
@@ -46,7 +47,7 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
         console.log(originalUrl);
         const newLink = await createNewLink(originalUrl, linkId, thisUser);
         console.log(newLink);
-        res.json(newLink);
+        res.status(201).json(newLink);
         return;
     }catch(err){
         console.error(err);
@@ -74,4 +75,31 @@ async function getOriginalUrl(req: Request, res: Response): Promise<void> {
     res.redirect(301, desiredLink.originalUrl);
 }
 
-export { shortenUrl, getOriginalUrl };
+async function returningLinkToUser(req: Request, res: Response): Promise<Link[]> {
+
+    const { userId } = req.body as loggedUser;
+    const { isLoggedIn, authenticatedUser } = req.session;
+
+    if(!isLoggedIn){
+        res.sendStatus(401);
+        return;
+    }
+
+    try{
+        if(authenticatedUser.isAdmin){
+            const link = await getLinksByUserIdForOwnAccount(userId);
+            return link;
+        }else{
+            const link = await getLinksByUserId(userId);
+            return link;
+        }
+    }catch(err){
+        console.error(err);
+        res.sendStatus(500);
+        return;
+    }
+
+
+}
+
+export { shortenUrl, getOriginalUrl, returningLinkToUser };

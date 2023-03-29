@@ -5,7 +5,6 @@ import { registerUser, login } from './controllers/UserController';
 import { shortenUrl, getOriginalUrl } from './controllers/LinkController';
 import session from 'express-session';
 import connectSqlite3 from 'connect-sqlite3';
-import { getLinksByUserId } from './models/LinkModel';
 
 const app: Express = express();
 const { PORT, COOKIE_SECRET } = process.env;
@@ -27,8 +26,6 @@ app.post('/api/users', registerUser);
 app.post('/api/login', login);
 app.post('/api/links', shortenUrl);
 app.get('/:targetLinkId', getOriginalUrl);
-
-console.log(await getLinksByUserId("73beb072-60f1-49ee-ab25-0ea1fb45c377"));
 
 app.listen(PORT, () => {
     console.log(`Listening at http://localhost:${PORT}`);

@@ -50,11 +50,24 @@ async function getLinksByUserId(userId: string): Promise<Link[]> {
       .createQueryBuilder('link')
       .where({ user: { userId } }) // NOTES: This is how you do nested WHERE clauses
       .leftJoin('link.user', 'user')
-      .select(['link.linkId', 'link.originalUrl', 'user.userId'])
+      .select(['link.linkId', 'link.originalUrl', 'user.userId', 'user.username', 'user.isAdmin'])
       .getMany();
       
   
     return links;
 }  
 
-export {createLinkId, createNewLink, updateLinkVisits, getLinksByUserId };
+async function getLinksByUserIdForOwnAccount(userId: string): Promise<Link[]> {
+  // TODO: This function is pretty much the same but it should return the fields 
+  const links = await linkRepository
+      .createQueryBuilder('link')
+      .where({ user: { userId } }) // NOTES: This is how you do nested WHERE clauses
+      .leftJoin('link.user', 'user')
+      .select(['link.linkId', 'link.originalUrl', 'link.numHits', 'link.lastAccessedOn', 'user.userId', 'user.username', 'user.isPro', 'user.isAdmin'])
+      .getMany();
+      
+  
+    return links;
+}
+
+export {createLinkId, createNewLink, updateLinkVisits, getLinksByUserId, getLinksByUserIdForOwnAccount };
