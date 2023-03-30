@@ -21,8 +21,7 @@ async function registerUser(req: Request, res: Response): Promise<void> {
 
     try {
         // IMPORTANT: Store the `passwordHash` and NOT the plaintext password
-        const newUser = await addNewUser(username, passwordHash);
-        console.log(newUser);
+        await addNewUser(username, passwordHash);
         res.sendStatus(201);
     } catch (err) {
         console.error(err);
@@ -38,11 +37,10 @@ async function login(req: Request, res: Response): Promise<void> {
     const user = await getUserByUsername(username);
 
     if(!user){
-        console.log("HEEREERERE\n\n\n\n\n\n");
         res.sendStatus(403);
         return;
     }
-    console.log("GEEEERRRRE\n\n\n\n\n\n");
+
     const { passwordHash } = user;
 
     if(!(await argon2.verify(passwordHash, password))) {

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createLinkId, createNewLink, updateLinkVisits, getLinksByUserId, getLinksByUserIdForOwnAccount } from '../models/LinkModel';
+import { createLinkId, createNewLink, updateLinkVisits, getLinksByUserId, getLinksByUserIdForOwnAccount, deleteLink } from '../models/LinkModel';
 import { getUserByID, getLinkByID } from '../models/UserModel';
 import { Link } from "../entities/Link";
 
@@ -44,9 +44,7 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
     // Respond with status 201 if the insert was successful
 
     try {
-        console.log(originalUrl);
         const newLink = await createNewLink(originalUrl, linkId, thisUser);
-        console.log(newLink);
         res.status(201).json(newLink);
         return;
     } catch (err) {
@@ -94,13 +92,13 @@ async function returningLinkToUser(req: Request, res: Response): Promise<Link[]>
         if (authenticatedUser.isAdmin) {
 
             link = await getLinksByUserIdForOwnAccount(targetUserId);
-            res.sendStatus(201);
+            res.status(200).json(link);
             return link;
 
         } else {
 
             link = await getLinksByUserId(targetUserId);
-            res.sendStatus(201);
+            res.status(200).json(link);
             return link;
 
         }
@@ -113,9 +111,35 @@ async function returningLinkToUser(req: Request, res: Response): Promise<Link[]>
 
     }
 
-    res.sendStatus(200);
-        return link;
+}
+
+async function deletingLinkById(req: Request, res: Response): Promise<void> {
+    
+    const { targetUserId, targetLinkId } = req.params as linkIdSearch;
+    const { isLoggedIn, authenticatedUser } = req.session;
+    const link = await getLinkByID(targetLinkId);
+    console.log(link);
+
+    if (!isLoggedIn) {
+        res.sendStatus(401);
+        return;
+    }
+
+    if((authenticatedUser.isAdmin === true) || (authenticatedUser.userId === targetUserId)){
+
+        await deleteLink(link.linkId);
+        res.status(200).json("The link was deleted.");
+        return;
+
+    }else{
+        
+        res.sendStatus(403).json("You are not authorized.");
+        return;
+
+    }
+
+    return;
 
 }
 
-export { shortenUrl, getOriginalUrl, returningLinkToUser };
+export { shortenUrl, getOriginalUrl, returningLinkToUser, deletingLinkById };

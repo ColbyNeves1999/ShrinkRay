@@ -2,7 +2,7 @@ import './config';
 import 'express-async-errors';
 import express, { Express } from 'express';
 import { registerUser, login } from './controllers/UserController';
-import { shortenUrl, getOriginalUrl, returningLinkToUser } from './controllers/LinkController';
+import { shortenUrl, getOriginalUrl, returningLinkToUser, deletingLinkById } from './controllers/LinkController';
 import session from 'express-session';
 import connectSqlite3 from 'connect-sqlite3';
 
@@ -27,6 +27,7 @@ app.post('/api/login', login);
 app.post('/api/links', shortenUrl);
 app.get('/:targetLinkId', getOriginalUrl);
 app.get('/api/users/:targetUserId/links', returningLinkToUser);
+app.delete('/api/users/:targetUserId/links/:targetLinkId', deletingLinkById);
 
 app.listen(PORT, () => {
   console.log(`Listening at http://localhost:${PORT}`);

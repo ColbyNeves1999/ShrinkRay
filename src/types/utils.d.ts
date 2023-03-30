@@ -24,3 +24,8 @@ type linkId = {
 type returnedUser = {
   targetUserId: string;
 }
+
+type linkIdSearch = {
+  targetUserId: string;
+  targetLinkId: string;
+}
