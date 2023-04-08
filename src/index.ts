@@ -1,14 +1,16 @@
 import './config';
 import 'express-async-errors';
 import express, { Express } from 'express';
-import { registerUser, login } from './controllers/UserController';
-import { shortenUrl, getOriginalUrl, returningLinkToUser, deletingLinkById } from './controllers/LinkController';
 import session from 'express-session';
 import connectSqlite3 from 'connect-sqlite3';
+import { registerUser, login } from './controllers/UserController';
+import { shortenUrl, getOriginalUrl, returningLinkToUser, deletingLinkById } from './controllers/LinkController';
+
 
 const app: Express = express();
-const { PORT, COOKIE_SECRET } = process.env;
+app.use(express.static('public', { extensions: ['html'] }));
 
+const { PORT, COOKIE_SECRET } = process.env;
 const SQLiteStore = connectSqlite3(session);
 
 app.use(session({
@@ -20,6 +22,7 @@ app.use(session({
   saveUninitialized: false,
 }));
 
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 app.post('/api/users', registerUser);

@@ -1,20 +1,20 @@
 import { Request, Response } from 'express';
+//import { parseDatabaseError } from '../utils/db-utils';
 import { createLinkId, createNewLink, updateLinkVisits, getLinksByUserId, getLinksByUserIdForOwnAccount, deleteLink } from '../models/LinkModel';
 import { getUserByID, getLinkByID } from '../models/UserModel';
 import { Link } from "../entities/Link";
 
+const { PORT } = process.env;
+
 async function shortenUrl(req: Request, res: Response): Promise<void> {
 
-    const { originalUrl } = req.body as linkURL;
-    const { isLoggedIn, authenticatedUser } = req.session;
-
-    if (!isLoggedIn) {
-        res.sendStatus(401);
+    if (!req.session.isLoggedIn) {
+        res.redirect(`http://localhost:${PORT}/login`);
         return;
     }
 
     // Get the userId from `req.session`
-    const userId = authenticatedUser.userId;
+    const userId = req.session.authenticatedUser.userId;
 
     // Retrieve the user's account data using their ID
     const thisUser = await getUserByID(userId);
@@ -37,6 +37,8 @@ async function shortenUrl(req: Request, res: Response): Promise<void> {
             return;
         }
     }
+
+    const { originalUrl } = req.body as linkURL;
 
     // Generate a `linkId`
     const linkId = await createLinkId(originalUrl, userId);
@@ -88,7 +90,7 @@ async function returningLinkToUser(req: Request, res: Response): Promise<Link[]>
     }
 
     try {
-        
+
         if (authenticatedUser.isAdmin) {
 
             link = await getLinksByUserIdForOwnAccount(targetUserId);
@@ -114,7 +116,7 @@ async function returningLinkToUser(req: Request, res: Response): Promise<Link[]>
 }
 
 async function deletingLinkById(req: Request, res: Response): Promise<void> {
-    
+
     const { targetUserId, targetLinkId } = req.params as linkIdSearch;
     const { isLoggedIn, authenticatedUser } = req.session;
     const link = await getLinkByID(targetLinkId);
@@ -125,14 +127,14 @@ async function deletingLinkById(req: Request, res: Response): Promise<void> {
         return;
     }
 
-    if((authenticatedUser.isAdmin === true) || (authenticatedUser.userId === targetUserId)){
+    if ((authenticatedUser.isAdmin === true) || (authenticatedUser.userId === targetUserId)) {
 
         await deleteLink(link.linkId);
         res.status(200).json("The link was deleted.");
         return;
 
-    }else{
-        
+    } else {
+
         res.sendStatus(403).json("You are not authorized.");
         return;
 
